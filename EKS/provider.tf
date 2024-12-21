@@ -37,12 +37,77 @@ provider "helm" {
   }
 }
 
-#provider "kubectl" {
-#  host                   = aws_eks_cluster.kubeedge.endpoint
-#  cluster_ca_certificate = base64decode(aws_eks_cluster.kubeedge.certificate_authority.0.data)
-#  exec {
-#    api_version = "client.authentication.k8s.io/v1beta1"
-#    args        = ["--region", var.region, "eks", "get-token", "--cluster-name", var.name]
-#    command     = "aws"
-#  }
-#}
+# Развертывание Nginx Ingress Controller с помощью Helm
+resource "helm_release" "nginx_ingress" {
+  name       = "nginx-ingress"
+  namespace  = "kube-system"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = "4.0.0"
+
+  set {
+    name  = "controller.replicaCount"
+    value = "1"
+  }
+
+  set {
+    name  = "controller.service.externalTrafficPolicy"
+    value = "Local"
+  }
+}
+
+output "eks_cluster_endpoint" {
+  value = module.eks_cluster.cluster_endpoint
+}
+
+output "eks_cluster_name" {
+  value = module.eks_cluster.cluster_name
+}
+
+output "eks_cluster_kubeconfig" {
+  value = module.eks_cluster.kubeconfig
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = aws_eks_cluster.danit.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.danit.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.danit.token
+  }
+}
+
+# Развертывание ArgoCD с помощью Helm
+resource "helm_release" "argocd" {
+  name       = "argocd"
+  namespace  = "argocd"
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
+  version    = "5.0.0"
+
+  create_namespace = true
+
+  set {
+    name  = "server.ingress.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "server.ingress.hosts[0]"
+    value = "argocd.student1.devops4.test-danit.com"  # Замените на ваш DNS
+  }
+
+  set {
+    name  = "server.ingress.annotations.kubernetes.io/ingress.class"
+    value = "nginx"
+  }
+
+  set {
+    name  = "server.service.type"
+    value = "LoadBalancer"
+  }
+
+  set {
+    name  = "server.service.externalTrafficPolicy"
+    value = "Local"
+  }
+}
