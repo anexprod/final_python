@@ -1,40 +1,28 @@
-# Here we must set our profile, otherwise infra will be created in the root account
+# Провайдер для AWS
 provider "aws" {
   region  = var.region
   profile = var.iam_profile
 }
 
+# Провайдер для Kubernetes
 provider "kubernetes" {
   host                   = aws_eks_cluster.danit.endpoint
   cluster_ca_certificate = base64decode(aws_eks_cluster.danit.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.danit.token
 }
 
-data "aws_availability_zones" "available" {}
-
-# Not required: currently used in conjunction with using
-# icanhazip.com to determine local workstation external IP
-# to open EC2 Security Group access to the Kubernetes cluster.
-# See workstation-external-ip.tf for additional information.
-#provider "http" {}
-
-#terraform {
-#  required_version = ">= 0.13"
-#
-#  required_providers {
-#    kubectl = {
-#      source  = "gavinbunney/kubectl"
-#      version = ">= 1.7.0"
-#    }
-#  }
-#}
-
+# Провайдер для Helm
 provider "helm" {
   kubernetes {
     host                   = aws_eks_cluster.danit.endpoint
     cluster_ca_certificate = base64decode(aws_eks_cluster.danit.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.danit.token
   }
+}
+
+# Провайдер для Route 53
+data "aws_route53_zone" "example" {
+  name = "test-danit.com."  # Замените на ваш домен
 }
 
 # Развертывание Nginx Ingress Controller с помощью Helm
@@ -53,26 +41,6 @@ resource "helm_release" "nginx_ingress" {
   set {
     name  = "controller.service.externalTrafficPolicy"
     value = "Local"
-  }
-}
-
-output "eks_cluster_endpoint" {
-  value = module.eks_cluster.cluster_endpoint
-}
-
-output "eks_cluster_name" {
-  value = module.eks_cluster.cluster_name
-}
-
-output "eks_cluster_kubeconfig" {
-  value = module.eks_cluster.kubeconfig
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.danit.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.danit.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.danit.token
   }
 }
 
@@ -110,4 +78,25 @@ resource "helm_release" "argocd" {
     name  = "server.service.externalTrafficPolicy"
     value = "Local"
   }
+}
+
+# Создание DNS-записи для ArgoCD в Route 53
+resource "aws_route53_record" "argocd" {
+  zone_id = data.aws_route53_zone.example.id
+  name    = "argocd.student1.devops4.test-danit.com"  # Замените на ваше имя
+  type    = "CNAME"
+  ttl     = 300
+  records = [helm_release.argocd.status.load_balancer[0].ingress[0].hostname]  # Получение адреса из Helm
+}
+
+output "eks_cluster_endpoint" {
+  value = module.eks_cluster.cluster_endpoint
+}
+
+output "eks_cluster_name" {
+  value = module.eks_cluster.cluster_name
+}
+
+output "eks_cluster_kubeconfig" {
+  value = module.eks_cluster.kubeconfig
 }
