@@ -1,8 +1,9 @@
 terraform {
   backend "s3" {
     bucket         = "final-step"
-    key            = "eks/terraform.tfstate"
-    region         = "us-east-1"
+    key            = "terraform.tfstate"
     encrypt        = true
+    dynamodb_table = "lock-tf-final-step"
+    region         = "us-east-1"
   }
 }

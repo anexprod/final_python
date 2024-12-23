@@ -1,40 +1,3 @@
-# IAM Role для Worker Node
-resource "aws_iam_role" "danit-node" {
-  name = "danit-node-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action    = "sts:AssumeRole"
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        }
-        Effect    = "Allow"
-      }
-    ]
-  })
-}
-
-# Привязка политики AmazonEKSWorkerNodePolicy
-resource "aws_iam_role_policy_attachment" "kubeedge-node-AmazonEKSWorkerNodePolicy" {
-  role       = aws_iam_role.danit-node.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-}
-
-# Привязка политики AmazonEKS_CNI_Policy
-resource "aws_iam_role_policy_attachment" "kubeedge-node-AmazonEKS_CNI_Policy" {
-  role       = aws_iam_role.danit-node.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-}
-
-# Привязка политики AmazonEC2ContainerRegistryReadOnly
-resource "aws_iam_role_policy_attachment" "kubeedge-node-AmazonEC2ContainerRegistryReadOnly" {
-  role       = aws_iam_role.danit-node.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-}
-
-# AWS EKS Worker Node Group
 resource "aws_eks_node_group" "danit-amd" {
   cluster_name    = aws_eks_cluster.danit.name
   node_group_name = "${var.name}-amd"
@@ -59,7 +22,6 @@ resource "aws_eks_node_group" "danit-amd" {
     aws_iam_role_policy_attachment.kubeedge-node-AmazonEKS_CNI_Policy,
     aws_iam_role_policy_attachment.kubeedge-node-AmazonEC2ContainerRegistryReadOnly,
   ]
-  
   tags = merge(
     var.tags,
     { Name = "${var.name}-amd-node-group" }

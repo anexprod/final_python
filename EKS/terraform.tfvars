@@ -1,21 +1,13 @@
-# AWS account config
 region = "eu-central-1"
 
-# General for all infrastructure
-# This is the name prefix for all infra components
 name = "danit"
 
-
-#vpc_id      = "vpc-06ae62935ffb33e2b"
-#subnets_ids = ["subnet-0b27929ad2896d99f", "subnet-0c15a8c6856de7853", "subnet-01a5c422124b1c69e"]
-
-
-vpc_id = "vpc-03804fef5ae7cda1c"
-subnets_ids = ["subnet-09147e169de2bbedd", "subnet-014fb3015844ed798", "subnet-09e5991259d455b0f"]
+vpc_id = "vpc-03b5ab701ad62483a"
+subnets_ids = ["subnet-0cf731c2cac26c8f8", "subnet-07e51e6f68ef83e22", "subnet-020c0486dd154cee3"]
 
 tags = {
-  Environment = "test-studen1"
+  Environment = "test-student1"
   TfControl   = "true"
 }
 
-zone_name = "devops3.test-danit.com"
+zone_name = "devops4.test-danit.com"

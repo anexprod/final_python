@@ -3,6 +3,22 @@ resource "aws_security_group" "danit-cluster" {
   description = "Cluster communication with worker nodes"
   vpc_id      = var.vpc_id
 
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTP inbound"
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTPS inbound"
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -20,7 +36,6 @@ data "http" "workstation-external-ip" {
   url = "http://ipv4.icanhazip.com"
 }
 
-# Override with variable or hardcoded value if necessary
 locals {
   workstation-external-cidr = "${chomp(data.http.workstation-external-ip.response_body)}/32"
 }
