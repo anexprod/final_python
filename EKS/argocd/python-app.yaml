@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: python-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/anexprod/final_python.git'
+    path: manifests
+    targetRevision: main
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: python-app
+  syncPolicy:
+    automated: {}
+    syncOptions:
+    - CreateNamespace=true

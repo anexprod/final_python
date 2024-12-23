@@ -10,7 +10,7 @@ name = "danit"
 #subnets_ids = ["subnet-0b27929ad2896d99f", "subnet-0c15a8c6856de7853", "subnet-01a5c422124b1c69e"]
 
 
-vpc_id      = "vpc-0b3c6a5edabcbc866"
+vpc_id = "vpc-03804fef5ae7cda1c"
 subnets_ids = ["subnet-09147e169de2bbedd", "subnet-014fb3015844ed798", "subnet-09e5991259d455b0f"]
 
 tags = {
