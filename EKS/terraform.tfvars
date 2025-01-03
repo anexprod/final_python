@@ -1,9 +1,9 @@
 region = "eu-central-1"
 
-name = "danit"
+name = "eugene"
 
-vpc_id = "vpc-03b5ab701ad62483a"
-subnets_ids = ["subnet-0cf731c2cac26c8f8", "subnet-07e51e6f68ef83e22", "subnet-020c0486dd154cee3"]
+vpc_id = "vpc-091c2f49f340cc84c"
+subnets_ids = ["subnet-07b489a2e1efe497f", "subnet-0340028001abca9af", "subnet-020c0486dd154cee3"]
 
 tags = {
   Environment = "test-student1"

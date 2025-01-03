@@ -1,7 +1,7 @@
 resource "aws_security_group" "danit-cluster" {
   name        = "${var.name}-eks-sg"
   description = "Cluster communication with worker nodes"
-  vpc_id      = var.vpc_id
+  vpc_id      = "vpc-03b5ab701ad62483a"
 
   ingress {
     from_port   = 80
