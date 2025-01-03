@@ -2,7 +2,7 @@ from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-VERSION = "1.0.3"
+VERSION = "1.0.2"
 MESSAGE = "Welcome to the main page!"
 
 @app.route('/')

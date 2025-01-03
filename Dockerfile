@@ -1,5 +1,6 @@
 FROM python:3.9-slim
 WORKDIR /app
-COPY server.py /app/server.py
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
 EXPOSE 5000
-CMD ["python", "server.py"]
+CMD ["python", "app.py"]
