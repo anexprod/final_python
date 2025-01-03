@@ -1,18 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-app-ingress
+  name: python-app
+  namespace: python-app
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: app.student1.devops4.test-danit.com 
+  - host: app.eugene.devops4.test-danit.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: my-app-service
+            name: python-app
             port:
               number: 80
